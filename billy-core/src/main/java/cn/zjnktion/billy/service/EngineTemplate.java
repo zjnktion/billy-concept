@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * {@link Engine} 的一个模板类
@@ -27,13 +26,13 @@ public abstract class EngineTemplate implements Engine {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EngineTemplate.class);
 
-    private List<EngineListener> listeners = new CopyOnWriteArrayList<EngineListener>();
+    // maybe arraylist is better?
+    private final List<EngineListener> listeners = new CopyOnWriteArrayList<EngineListener>();
 
     private Handler handler;
 
-    private Map<Long, Context> managedContexts;
-    private Map<Long, Context> readOnlyManagedContexts;
-    private AtomicLong cumulativeManagedContextsCount = new AtomicLong(0);
+    private final Map<Long, Context> managedContexts = new ConcurrentHashMap<Long, Context>();;
+    private final Map<Long, Context> readOnlyManagedContexts = Collections.unmodifiableMap(managedContexts);;
 
     private ContextDataFactory contextDataFactory;
     protected final ContextConfig contextConfig;
@@ -46,10 +45,8 @@ public abstract class EngineTemplate implements Engine {
 
     private volatile boolean activated;
 
-    private Executor executor;
+    private final Executor executor;
     private volatile boolean createdDefaultExecutor;
-
-    private EngineListener defaultEngineListener;
 
     protected EngineTemplate(ContextConfig contextConfig, Executor executor) {
         if (contextConfig == null) {
@@ -60,13 +57,8 @@ public abstract class EngineTemplate implements Engine {
             throw new IllegalArgumentException("There's no engine meta info to be assigned.");
         }
 
-        // maybe arraylist is better?
-        listeners = new CopyOnWriteArrayList<EngineListener>();
-        defaultEngineListener = new DefaultEngineListener();
+        EngineListener defaultEngineListener = new DefaultEngineListener();
         listeners.add(defaultEngineListener);
-
-        managedContexts = new ConcurrentHashMap<Long, Context>();
-        readOnlyManagedContexts = Collections.unmodifiableMap(managedContexts);
 
         this.contextDataFactory = new DefaultContextDataFactory();
         this.contextConfig = contextConfig;
@@ -105,7 +97,7 @@ public abstract class EngineTemplate implements Engine {
                     }
                 }
             } finally {
-                disconnectAllContexts();
+                disconnectAllConnections();
             }
         }
     }
@@ -146,10 +138,6 @@ public abstract class EngineTemplate implements Engine {
         return managedContexts.size();
     }
 
-    protected long getCumulativeManagedContextsCount() {
-        return cumulativeManagedContextsCount.get();
-    }
-
     public final ContextDataFactory getContextDataFactory() {
         return contextDataFactory;
     }
@@ -166,11 +154,22 @@ public abstract class EngineTemplate implements Engine {
         this.contextDataFactory = contextDataFactory;
     }
 
+    /**
+     * 服务端和客户端有不同的实现
+     * @param context
+     */
     protected abstract void fireContextCreated(Context context);
 
+    /**
+     * 服务端和客户端有不同的实现
+     * @param context
+     */
     protected abstract void fireContextDestroyed(Context context);
 
-    protected abstract void disconnectAllContexts();
+    /**
+     * 服务端和客户端有不同的实现
+     */
+    protected abstract void disconnectAllConnections();
 
     public FilterChainBuilder getFilterChainBuilder() {
         return filterChainBuilder;
@@ -230,8 +229,14 @@ public abstract class EngineTemplate implements Engine {
                 }
             }
         }
+
+        disposed = true;
     }
 
+    /**
+     * 服务端和客户端有不同的实现
+     * @throws Exception
+     */
     protected abstract void disposeImpl() throws Exception;
 
     public final boolean isDisposing() {

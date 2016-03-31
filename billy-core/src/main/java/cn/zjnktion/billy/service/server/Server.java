@@ -11,10 +11,6 @@ import java.net.SocketAddress;
  */
 public interface Server extends Engine {
 
-    SocketAddress getDefaultBindableAddress();
-
-    void setDefaultBindableAddress(SocketAddress bindableAddress);
-
     SocketAddress getBoundAddress();
 
     void setBoundAddress(SocketAddress boundAddress);
@@ -23,9 +19,9 @@ public interface Server extends Engine {
 
     void bind(SocketAddress socketAddress) throws IOException;
 
-    boolean isAllContextsClosed();
+    boolean isCloseContextsBeforeUnbind();
 
-    void setAllContextsClosed();
+    void setCloseContextsBeforeUnbind(boolean closeContextsBeforeUnbind);
 
     void unbind() throws IOException;
 
