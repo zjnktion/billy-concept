@@ -12,7 +12,6 @@ import cn.zjnktion.billy.listener.EngineListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -32,7 +31,6 @@ public abstract class EngineTemplate implements Engine {
     private Handler handler;
 
     private final Map<Long, Context> managedContexts = new ConcurrentHashMap<Long, Context>();;
-    private final Map<Long, Context> readOnlyManagedContexts = Collections.unmodifiableMap(managedContexts);;
 
     private ContextDataFactory contextDataFactory;
     protected final ContextConfig contextConfig;
@@ -131,7 +129,7 @@ public abstract class EngineTemplate implements Engine {
     }
 
     public final Map<Long, Context> getManagedContexts() {
-        return readOnlyManagedContexts;
+        return managedContexts;
     }
 
     public final int getManagedContextsCount() {

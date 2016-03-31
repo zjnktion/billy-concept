@@ -5,4 +5,9 @@ package cn.zjnktion.billy.service.server;
  * Created by zhengjn on 2016/3/30.
  */
 public abstract class NioSocketServer extends ConnectionOrientedServerTemplete implements SocketServer {
+
+    public NioSocketServer() {
+        super(null, null, null);
+    }
+
 }

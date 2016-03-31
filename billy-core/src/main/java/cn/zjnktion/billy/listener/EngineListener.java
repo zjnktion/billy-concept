@@ -22,6 +22,4 @@ public interface EngineListener extends EventListener {
 
     void contextClosed(Context context) throws Exception;
 
-    void contextDestroyed(Context context) throws Exception;
-
 }

@@ -7,6 +7,7 @@ import cn.zjnktion.billy.processor.Processor;
 import cn.zjnktion.billy.processor.ProcessorPool;
 import cn.zjnktion.billy.service.server.exception.ServerInitException;
 
+import java.nio.channels.spi.SelectorProvider;
 import java.util.concurrent.Executor;
 
 /**
@@ -17,23 +18,30 @@ public abstract class ConnectionOrientedServerTemplete<C extends ContextTemplete
     private final ProcessorPool<C> processorPool;
     private final boolean createdDefaultProcessorPool;
 
+    protected final SelectorProvider selectorProvider;
+
     private volatile boolean acceptable;
 
     private S socket;
 
     protected ConnectionOrientedServerTemplete(ContextConfig contextConfig, Class<? extends Processor<C>> processorClass) {
-        this(contextConfig, null, new DefaultProcessorPool<C>(processorClass), true);
+        this(contextConfig, null, new DefaultProcessorPool<C>(processorClass), true, null);
     }
 
+    protected ConnectionOrientedServerTemplete(ContextConfig contextConfig, Class<? extends Processor<C>> processorClass, SelectorProvider selectorProvider) {
+        this(contextConfig, null, new DefaultProcessorPool<C>(processorClass), true, selectorProvider);
+    }
+
+
     protected ConnectionOrientedServerTemplete(ContextConfig contextConfig, ProcessorPool<C> processorPool) {
-        this(contextConfig, null, processorPool, false);
+        this(contextConfig, null, processorPool, false, null);
     }
 
     protected ConnectionOrientedServerTemplete(ContextConfig contextConfig, Executor executor, ProcessorPool<C> processorPool) {
-        this(contextConfig, executor, processorPool, false);
+        this(contextConfig, executor, processorPool, false, null);
     }
 
-    private ConnectionOrientedServerTemplete(ContextConfig contextConfig, Executor executor, ProcessorPool<C> processorPool, boolean createdDefaultProcessorPool) {
+    private ConnectionOrientedServerTemplete(ContextConfig contextConfig, Executor executor, ProcessorPool<C> processorPool, boolean createdDefaultProcessorPool, SelectorProvider selectorProvider) {
         super(contextConfig, executor);
 
         if (processorPool == null) {
@@ -43,8 +51,10 @@ public abstract class ConnectionOrientedServerTemplete<C extends ContextTemplete
         this.processorPool = processorPool;
         this.createdDefaultProcessorPool = createdDefaultProcessorPool;
 
+        this.selectorProvider = selectorProvider;
+
         try {
-            initServer();
+            init();
             acceptable = true;
         }
         catch (Exception e) {
@@ -53,12 +63,16 @@ public abstract class ConnectionOrientedServerTemplete<C extends ContextTemplete
         finally {
             if (!acceptable) {
                 try {
-                    destoryServer();
+                    destory();
                 } catch (Exception e) {
                     // we should monitor this exception and deliver to business handler.
                 }
             }
         }
     }
+
+    protected abstract void init() throws Exception;
+
+    protected abstract void destory() throws Exception;
 
 }

@@ -1,6 +1,11 @@
 package cn.zjnktion.billy.service.server;
 
+import cn.zjnktion.billy.context.Context;
 import cn.zjnktion.billy.context.ContextConfig;
+import cn.zjnktion.billy.filter.FilterChain;
+import cn.zjnktion.billy.listener.EngineListener;
+import cn.zjnktion.billy.listener.FutureListener;
+import cn.zjnktion.billy.listener.LockNotifyListener;
 import cn.zjnktion.billy.service.EngineTemplate;
 import cn.zjnktion.billy.service.server.exception.BindException;
 import cn.zjnktion.billy.service.server.exception.UnbindException;
@@ -8,7 +13,9 @@ import cn.zjnktion.billy.service.server.exception.UnbindException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 
 /**
  * 通用I/O服务器模板
@@ -107,6 +114,52 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
         fireEngineDeacitvated();
     }
 
+    protected final void fireContextCreated(Context context) {
+        if (getManagedContexts().putIfAbsent(context.getId(), context) != null) {
+            return;
+        }
+
+        FilterChain filterChain = context.getFilterChain();
+        filterChain.fireContextCreated();
+        filterChain.fireContextOpened();
+
+        List<EngineListener> listeners = getListeners();
+        for (EngineListener listener : listeners) {
+            try {
+                listener.contextCreated(context);
+            } catch (Exception e) {
+                // we should monitor this exception and deliver to business handler.
+            }
+        }
+    }
+
+    protected void fireContextDestroyed(Context context) {
+        if (getManagedContexts().remove(context.getId()) == null) {
+            return;
+        }
+
+        FilterChain filterChain = context.getFilterChain();
+        filterChain.fireContextClosed();
+
+        List<EngineListener> listeners = getListeners();
+        for (EngineListener listener : listeners) {
+            try {
+                listener.contextClosed(context);
+            } catch (Exception e) {
+                // we should monitor this exception and deliver to business handler.
+            }
+        }
+    }
+    protected final void disconnectAllConnections() {
+        if (!isCloseContextsBeforeUnbind()) {
+            return;
+        }
+
+        Object lock = new Object();
+        FutureListener<Future> listener = new LockNotifyListener(lock);
+    }
+
+
     /**
      * 不同的io类型有不同的实现
      * @param socketAddress
@@ -121,18 +174,6 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
      * @throws Exception
      */
     protected abstract void unbindImpl(SocketAddress socketAddress) throws Exception;
-
-    /**
-     * 面向连接和无连接有不同的实现
-     * @throws Exception
-     */
-    protected abstract void initServer() throws Exception;
-
-    /**
-     * 面向连接和无连接有不同的实现
-     * @throws Exception
-     */
-    protected abstract void destoryServer() throws Exception;
 
     /**
      * Billy默认服务监听Address
