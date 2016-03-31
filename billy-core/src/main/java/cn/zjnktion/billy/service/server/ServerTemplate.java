@@ -20,6 +20,8 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
 
     private boolean closeContextBeforeUnbind = true;
 
+    //protected ServerTemplate
+
     protected ServerTemplate(ContextConfig contextConfig, Executor executor) {
         super(contextConfig, executor);
     }
@@ -74,6 +76,14 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
         fireEngineActivated();
     }
 
+    public boolean isCloseContextsBeforeUnbind() {
+        return closeContextBeforeUnbind;
+    }
+
+    public void setCloseContextsBeforeUnbind(boolean closeContextsBeforeUnbind) {
+        this.closeContextBeforeUnbind = closeContextsBeforeUnbind;
+    }
+
     public final void unbind() throws IOException {
         if (!isAcitve()) {
             throw new IllegalStateException("Cannot unbinding while server is deactivated.");
@@ -111,6 +121,18 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
      * @throws Exception
      */
     protected abstract void unbindImpl(SocketAddress socketAddress) throws Exception;
+
+    /**
+     * 面向连接和无连接有不同的实现
+     * @throws Exception
+     */
+    protected abstract void initServer() throws Exception;
+
+    /**
+     * 面向连接和无连接有不同的实现
+     * @throws Exception
+     */
+    protected abstract void destoryServer() throws Exception;
 
     /**
      * Billy默认服务监听Address
