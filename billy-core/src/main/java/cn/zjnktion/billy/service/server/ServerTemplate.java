@@ -3,6 +3,7 @@ package cn.zjnktion.billy.service.server;
 import cn.zjnktion.billy.context.Context;
 import cn.zjnktion.billy.context.ContextConfig;
 import cn.zjnktion.billy.filter.FilterChain;
+import cn.zjnktion.billy.future.BillyFuture;
 import cn.zjnktion.billy.listener.EngineListener;
 import cn.zjnktion.billy.listener.FutureListener;
 import cn.zjnktion.billy.listener.LockNotifyListener;
@@ -15,7 +16,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
 
 /**
  * 通用I/O服务器模板
@@ -26,8 +26,6 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
     private SocketAddress boundAddress;
 
     private boolean closeContextBeforeUnbind = true;
-
-    //protected ServerTemplate
 
     protected ServerTemplate(ContextConfig contextConfig, Executor executor) {
         super(contextConfig, executor);
@@ -115,7 +113,7 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
     }
 
     protected final void fireContextCreated(Context context) {
-        if (getManagedContexts().putIfAbsent(context.getId(), context) != null) {
+        if (managedContexts.putIfAbsent(context.getId(), context) != null) {
             return;
         }
 
@@ -134,7 +132,7 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
     }
 
     protected void fireContextDestroyed(Context context) {
-        if (getManagedContexts().remove(context.getId()) == null) {
+        if (managedContexts.remove(context.getId()) == null) {
             return;
         }
 
@@ -156,7 +154,21 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
         }
 
         Object lock = new Object();
-        FutureListener<Future> listener = new LockNotifyListener(lock);
+        FutureListener<BillyFuture> listener = new LockNotifyListener(lock);
+
+        for (Context context : managedContexts.values()) {
+            context.closeImmediately().addListener(listener);
+        }
+
+        try {
+            synchronized (lock) {
+                while (!managedContexts.isEmpty()) {
+                    lock.wait(500);
+                }
+            }
+        } catch (InterruptedException e) {
+            // do nothing
+        }
     }
 
 

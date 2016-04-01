@@ -12,6 +12,7 @@ import cn.zjnktion.billy.listener.EngineListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -30,7 +31,8 @@ public abstract class EngineTemplate implements Engine {
 
     private Handler handler;
 
-    private final Map<Long, Context> managedContexts = new ConcurrentHashMap<Long, Context>();;
+    protected final Map<Long, Context> managedContexts = new ConcurrentHashMap<Long, Context>();
+    private final Map<Long, Context> readOnlyManagedContexts = Collections.unmodifiableMap(managedContexts);
 
     private ContextDataFactory contextDataFactory;
     protected final ContextConfig contextConfig;
@@ -129,7 +131,7 @@ public abstract class EngineTemplate implements Engine {
     }
 
     public final Map<Long, Context> getManagedContexts() {
-        return managedContexts;
+        return readOnlyManagedContexts;
     }
 
     public final int getManagedContextsCount() {
@@ -169,7 +171,7 @@ public abstract class EngineTemplate implements Engine {
      */
     protected abstract void disconnectAllConnections();
 
-    public FilterChainBuilder getFilterChainBuilder() {
+    public FilterChainBuilder getFilterChain() {
         return filterChainBuilder;
     }
 
@@ -178,13 +180,6 @@ public abstract class EngineTemplate implements Engine {
             builder = new DefaultFilterChainBuilder();
         }
         filterChainBuilder = builder;
-    }
-
-    public DefaultFilterChainBuilder getDefaultFilterChainBuilder() {
-        if (!(filterChainBuilder instanceof DefaultFilterChainBuilder)) {
-            throw new IllegalStateException("Current filter chain builder is not a DefaultFilterChainBuilder.");
-        }
-        return (DefaultFilterChainBuilder) filterChainBuilder;
     }
 
     public final boolean isAcitve() {

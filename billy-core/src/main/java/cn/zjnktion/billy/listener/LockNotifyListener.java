@@ -1,11 +1,11 @@
 package cn.zjnktion.billy.listener;
 
-import java.util.concurrent.Future;
+import cn.zjnktion.billy.future.BillyFuture;
 
 /**
  * Created by zjnktion on 2016/3/31.
  */
-public class LockNotifyListener implements FutureListener<Future> {
+public class LockNotifyListener implements FutureListener<BillyFuture> {
 
     private final Object lock;
 
@@ -13,7 +13,7 @@ public class LockNotifyListener implements FutureListener<Future> {
         this.lock = lock;
     }
 
-    public void operationComplete(Future future) {
+    public void operationComplete(BillyFuture future) {
         synchronized (lock) {
             lock.notifyAll();
         }

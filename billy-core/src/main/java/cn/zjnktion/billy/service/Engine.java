@@ -1,9 +1,9 @@
 package cn.zjnktion.billy.service;
 
+import cn.zjnktion.billy.common.TransportMetadata;
 import cn.zjnktion.billy.context.Context;
 import cn.zjnktion.billy.context.ContextConfig;
 import cn.zjnktion.billy.context.ContextDataFactory;
-import cn.zjnktion.billy.filter.DefaultFilterChainBuilder;
 import cn.zjnktion.billy.filter.FilterChainBuilder;
 import cn.zjnktion.billy.handler.Handler;
 import cn.zjnktion.billy.listener.EngineListener;
@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface Engine {
 
-    EngineMetainfo getEngineMetainfo();
+    TransportMetadata getEngineMetainfo();
 
     void addListener(EngineListener listener);
 
@@ -36,11 +36,17 @@ public interface Engine {
 
     ContextConfig getContextConfig();
 
-    FilterChainBuilder getFilterChainBuilder();
+    /**
+     * 通过builder模式隐藏FilterChain构建
+     * @return
+     */
+    FilterChainBuilder getFilterChain();
 
+    /**
+     * 用户自定义FilterChain的builder
+     * @param builder
+     */
     void setFilterChainBuilder(FilterChainBuilder builder);
-
-    DefaultFilterChainBuilder getDefaultFilterChainBuilder();
 
     boolean isAcitve();
 
