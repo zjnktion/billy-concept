@@ -226,6 +226,10 @@ public abstract class EngineTemplate implements Engine {
         disposed = true;
     }
 
+    protected final void executeWorker(Runnable worker) {
+        executor.execute(worker);
+    }
+
     /**
      * 服务端和客户端有不同的实现
      * @throws Exception

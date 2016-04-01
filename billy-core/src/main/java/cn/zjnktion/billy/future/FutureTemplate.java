@@ -3,7 +3,7 @@ package cn.zjnktion.billy.future;
 import cn.zjnktion.billy.context.Context;
 import cn.zjnktion.billy.listener.FutureListener;
 import cn.zjnktion.billy.processor.Processor;
-import cn.zjnktion.billy.service.server.ConnectionOrientedServerTemplete;
+import cn.zjnktion.billy.service.server.NioServerTemplete;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -183,7 +183,7 @@ public abstract class FutureTemplate implements BillyFuture {
 
         // 简单的检查
         for (StackTraceElement stackElement : stackTrace) {
-            if (ConnectionOrientedServerTemplete.class.getName().equals(stackElement.getClassName())) {
+            if (NioServerTemplete.class.getName().equals(stackElement.getClassName())) {
                 IllegalStateException e = new IllegalStateException("t");
                 e.printStackTrace();
                 throw new IllegalStateException("DEAD LOCK: " + BillyFuture.class.getSimpleName() + ".await() was invoked from an I/O processor thread.  " + "Please use " + FutureListener.class.getSimpleName() + " or configure a proper thread model alternatively.");
