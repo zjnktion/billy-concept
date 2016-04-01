@@ -2,12 +2,16 @@ package cn.zjnktion.billy.service.server;
 
 import cn.zjnktion.billy.context.ContextConfig;
 import cn.zjnktion.billy.context.ContextTemplete;
+import cn.zjnktion.billy.future.ServerOperationFuture;
 import cn.zjnktion.billy.processor.DefaultProcessorPool;
 import cn.zjnktion.billy.processor.Processor;
 import cn.zjnktion.billy.processor.ProcessorPool;
 import cn.zjnktion.billy.service.server.exception.ServerInitException;
 
+import java.net.SocketAddress;
 import java.nio.channels.spi.SelectorProvider;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 
 /**
@@ -22,7 +26,10 @@ public abstract class ConnectionOrientedServerTemplete<C extends ContextTemplete
 
     private volatile boolean acceptable;
 
-    private S socket;
+    private final Queue<ServerOperationFuture> bindQueue = new ConcurrentLinkedQueue<ServerOperationFuture>();
+    private final Queue<ServerOperationFuture> unbindQueue = new ConcurrentLinkedQueue<ServerOperationFuture>();
+
+    private S serverSocket;
 
     protected ConnectionOrientedServerTemplete(ContextConfig contextConfig, Class<? extends Processor<C>> processorClass) {
         this(contextConfig, null, new DefaultProcessorPool<C>(processorClass), true, null);
@@ -69,6 +76,17 @@ public abstract class ConnectionOrientedServerTemplete<C extends ContextTemplete
                 }
             }
         }
+    }
+
+    protected final SocketAddress bindImpl(SocketAddress socketAddress) throws Exception {
+        ServerOperationFuture serverOperationFuture = new ServerOperationFuture(socketAddress);
+
+        bindQueue.add(serverOperationFuture);
+        return null;
+    }
+
+    protected final void unbindImpl() throws Exception {
+
     }
 
     protected abstract void init() throws Exception;

@@ -99,7 +99,7 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
         }
 
         try {
-            unbindImpl(boundAddress);
+            unbindImpl();
             boundAddress = null;
         }
         catch (IOException e) {
@@ -182,10 +182,9 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
 
     /**
      * 不同的io有不同的实现
-     * @param socketAddress
      * @throws Exception
      */
-    protected abstract void unbindImpl(SocketAddress socketAddress) throws Exception;
+    protected abstract void unbindImpl() throws Exception;
 
     /**
      * Billy默认服务监听Address
@@ -195,6 +194,7 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
         if (boundAddress != null) {
             return boundAddress;
         }
+        // 以后要改成从5222端口开始遍历，看看系统中哪个端口是可用的
         return new InetSocketAddress(5222);
     }
 
