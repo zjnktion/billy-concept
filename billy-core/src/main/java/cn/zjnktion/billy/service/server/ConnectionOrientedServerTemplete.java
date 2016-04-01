@@ -24,7 +24,8 @@ public abstract class ConnectionOrientedServerTemplete<C extends ContextTemplete
 
     protected final SelectorProvider selectorProvider;
 
-    private volatile boolean acceptable;
+    // 当前server是否可以开始工作了
+    private volatile boolean workable;
 
     private final Queue<ServerOperationFuture> bindQueue = new ConcurrentLinkedQueue<ServerOperationFuture>();
     private final Queue<ServerOperationFuture> unbindQueue = new ConcurrentLinkedQueue<ServerOperationFuture>();
@@ -62,13 +63,13 @@ public abstract class ConnectionOrientedServerTemplete<C extends ContextTemplete
 
         try {
             init();
-            acceptable = true;
+            workable = true;
         }
         catch (Exception e) {
             throw new ServerInitException("Failed to initialize " + getClass().getSimpleName() + ".", e);
         }
         finally {
-            if (!acceptable) {
+            if (!workable) {
                 try {
                     destory();
                 } catch (Exception e) {
