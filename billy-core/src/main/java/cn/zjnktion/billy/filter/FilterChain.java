@@ -11,4 +11,6 @@ public interface FilterChain {
 
     void fireContextClosed();
 
+    void fireExceptionCaught();
+
 }

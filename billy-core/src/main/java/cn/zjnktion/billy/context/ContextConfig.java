@@ -5,4 +5,11 @@ package cn.zjnktion.billy.context;
  * Created by zhengjn on 2016/3/30.
  */
 public interface ContextConfig {
+
+    /**
+     * 该项配置是默认关闭的
+     * @return
+     */
+    boolean isAsyncReadEnable();
+
 }

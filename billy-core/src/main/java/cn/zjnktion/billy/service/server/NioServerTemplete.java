@@ -88,7 +88,7 @@ public abstract class NioServerTemplete<C extends ContextTemplete, S> extends Se
         ServerOperationFuture serverOperationFuture = new ServerOperationFuture(socketAddress);
         registerQueue.add(serverOperationFuture);
 
-        runWorker();
+        work();
 
         try {
             semaphore.acquire();
@@ -112,7 +112,7 @@ public abstract class NioServerTemplete<C extends ContextTemplete, S> extends Se
         ServerOperationFuture serverOperationFuture = new ServerOperationFuture(getBoundAddress());
         unregisterQueue.add(serverOperationFuture);
 
-        runWorker();
+        work();
         wakeupSelect();
 
         serverOperationFuture.awaitUninterruptibly();
@@ -124,7 +124,7 @@ public abstract class NioServerTemplete<C extends ContextTemplete, S> extends Se
 
     protected final void disposeImpl() throws Exception {
         unbind();
-        runWorker();
+        work();
         wakeupSelect();
     }
 
@@ -158,7 +158,7 @@ public abstract class NioServerTemplete<C extends ContextTemplete, S> extends Se
      * 面向连接和无连接有不同的实现
      * @return
      */
-    protected abstract void runWorker() throws InterruptedException;
+    protected abstract void work() throws InterruptedException;
 
     /**
      * 面向连接和无连接有不同的实现
