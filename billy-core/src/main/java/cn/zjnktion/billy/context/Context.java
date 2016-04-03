@@ -46,6 +46,8 @@ public interface Context {
 
     WriteFuture write(Object message);
 
+    WriteFuture write(Object message, SocketAddress destination);
+
     void suspendWrite();
 
     void resumeWrite();
@@ -56,7 +58,9 @@ public interface Context {
 
     WriteTask getCurrentWriteTask();
 
-    void setCurrentWriteTask();
+    void setCurrentWriteTask(WriteTask currentWriteTask);
+
+    Object getCurrentWriteMessage();
 
     CloseFuture closeImmediately();
 
@@ -82,7 +86,7 @@ public interface Context {
 
     long getLastIdleTime(IdleType idleType);
 
-    int getIdleCount();
+    int getIdleCount(IdleType idleType);
 
     boolean isClosing();
 

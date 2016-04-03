@@ -53,7 +53,7 @@ public abstract class EngineTemplate implements Engine {
             throw new IllegalArgumentException("There's no context config to be assigned.");
         }
 
-        if (getEngineMetainfo() == null) {
+        if (getTransportMetadata() == null) {
             throw new IllegalArgumentException("There's no engine meta info to be assigned.");
         }
 
@@ -110,7 +110,7 @@ public abstract class EngineTemplate implements Engine {
         listeners.remove(listener);
     }
 
-    protected List<EngineListener> getListeners() {
+    public List<EngineListener> getListeners() {
         return listeners;
     }
 
@@ -158,13 +158,13 @@ public abstract class EngineTemplate implements Engine {
      * 服务端和客户端有不同的实现
      * @param context
      */
-    protected abstract void fireContextCreated(Context context);
+    public abstract void fireContextCreated(Context context);
 
     /**
      * 服务端和客户端有不同的实现
      * @param context
      */
-    protected abstract void fireContextDestroyed(Context context);
+    public abstract void fireContextDestroyed(Context context);
 
     /**
      * 服务端和客户端有不同的实现

@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface Engine {
 
-    TransportMetadata getEngineMetainfo();
+    TransportMetadata getTransportMetadata();
 
     void addListener(EngineListener listener);
 

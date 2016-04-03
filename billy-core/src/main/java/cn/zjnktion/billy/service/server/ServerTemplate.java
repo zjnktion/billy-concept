@@ -112,7 +112,7 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
         fireEngineDeacitvated();
     }
 
-    protected final void fireContextCreated(Context context) {
+    public final void fireContextCreated(Context context) {
         if (managedContexts.putIfAbsent(context.getId(), context) != null) {
             return;
         }
@@ -131,7 +131,7 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
         }
     }
 
-    protected void fireContextDestroyed(Context context) {
+    public void fireContextDestroyed(Context context) {
         if (managedContexts.remove(context.getId()) == null) {
             return;
         }

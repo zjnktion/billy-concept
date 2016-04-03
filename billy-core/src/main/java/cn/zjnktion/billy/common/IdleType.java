@@ -17,7 +17,7 @@ public class IdleType {
     }
 
     public static final IdleType READ_IDLE = new IdleType(READ_IDLE_NAME);
-    public static final IdleType WRITE_TYPE = new IdleType(WRITE_IDLE_NAME);
+    public static final IdleType WRITE_IDLE = new IdleType(WRITE_IDLE_NAME);
     public static final IdleType BOTH_IDLE = new IdleType(BOTH_IDLE_NAME);
 
 }

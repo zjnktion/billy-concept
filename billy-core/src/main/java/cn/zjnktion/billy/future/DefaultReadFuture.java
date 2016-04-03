@@ -35,25 +35,25 @@ public class DefaultReadFuture extends FutureTemplate implements ReadFuture {
 
     public Object getMessage() {
         if (isDone()) {
-            Object v = getResult();
+            Object o = getResult();
 
-            if (v == CLOSED) {
+            if (o == CLOSED) {
                 return null;
             }
 
-            if (v instanceof RuntimeException) {
-                throw (RuntimeException) v;
+            if (o instanceof RuntimeException) {
+                throw (RuntimeException) o;
             }
 
-            if (v instanceof Error) {
-                throw (Error) v;
+            if (o instanceof Error) {
+                throw (Error) o;
             }
 
-            if (v instanceof IOException || v instanceof Exception) {
-                throw new FutureException((Exception) v);
+            if (o instanceof IOException || o instanceof Exception) {
+                throw new FutureException((Exception) o);
             }
 
-            return v;
+            return o;
         }
 
         return null;
@@ -61,9 +61,9 @@ public class DefaultReadFuture extends FutureTemplate implements ReadFuture {
 
     public boolean isRead() {
         if (isDone()) {
-            Object v = getResult();
+            Object o = getResult();
 
-            return (v != CLOSED && !(v instanceof Throwable));
+            return (o != CLOSED && !(o instanceof Throwable));
         }
 
         return false;
@@ -87,10 +87,10 @@ public class DefaultReadFuture extends FutureTemplate implements ReadFuture {
 
     public Throwable getCause() {
         if (isDone()) {
-            Object v = getResult();
+            Object o = getResult();
 
-            if (v instanceof Throwable) {
-                return (Throwable)v;
+            if (o instanceof Throwable) {
+                return (Throwable) o;
             }
         }
 
@@ -99,7 +99,7 @@ public class DefaultReadFuture extends FutureTemplate implements ReadFuture {
 
     public void setCause(Throwable cause) {
         if (cause == null) {
-            throw new IllegalArgumentException("exception");
+            throw new IllegalArgumentException("Cannot set a null cause to read future.");
         }
 
         setResult(cause);

@@ -13,4 +13,7 @@ public interface FilterChain {
 
     void fireExceptionCaught();
 
+    void fireFilterWrite();
+
+    void fireFilterClose();
 }
