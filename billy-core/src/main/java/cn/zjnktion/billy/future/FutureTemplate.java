@@ -47,7 +47,8 @@ public abstract class FutureTemplate implements BillyFuture {
                 // 如果当前future已经完成了，我们往当前future加listener其实也就是让该listener直接执行就行了
                 // 因为其他listener在之前已经被执行了
                 notifyListener(listener);
-            } else {
+            }
+            else {
                 listeners.add(listener);
             }
         }
@@ -75,7 +76,8 @@ public abstract class FutureTemplate implements BillyFuture {
                 waitCount++;
                 try {
                     lock.wait(DEADLOCK_CHECK_INTERVAL);
-                } finally {
+                }
+                finally {
                     waitCount--;
 
                     if (!completed) {
@@ -95,7 +97,8 @@ public abstract class FutureTemplate implements BillyFuture {
     public BillyFuture awaitUninterruptibly() {
         try {
             await_(Long.MAX_VALUE, false);
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             // do nothing
         }
 
@@ -105,7 +108,8 @@ public abstract class FutureTemplate implements BillyFuture {
     public boolean awaitUninterruptibly(long timeout, TimeUnit timeUnit) {
         try {
             return await_(timeUnit.toMillis(timeout), false);
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             throw new InternalError();
         }
     }
@@ -162,8 +166,9 @@ public abstract class FutureTemplate implements BillyFuture {
     private void notifyListener(FutureListener listener) {
         try {
             listener.operationComplete(this);
-        } catch (Exception e) {
-            // we should monitor this exception and deliver to business handler.
+        }
+        catch (Exception e) {
+            // TODO we should monitor this exception and deliver to business handler.
         }
     }
 
@@ -198,7 +203,8 @@ public abstract class FutureTemplate implements BillyFuture {
                 if (Processor.class.isAssignableFrom(cls)) {
                     throw new IllegalStateException("DEAD LOCK: " + BillyFuture.class.getSimpleName() + ".await() was invoked from an I/O processor thread.  " + "Please use " + FutureListener.class.getSimpleName() + " or configure a proper thread model alternatively.");
                 }
-            } catch (ClassNotFoundException e) {
+            }
+            catch (ClassNotFoundException e) {
                 // Ignore
             }
         }
@@ -228,7 +234,8 @@ public abstract class FutureTemplate implements BillyFuture {
                         // 线程wait
                         // 但是每隔DEADLOCK_CHECK_INTERVAL的时间，我们都会让线程继续往下走进行一次死锁检查，而不会一直死wait在这一步
                         lock.wait(timeOut);
-                    } catch (InterruptedException e) {
+                    }
+                    catch (InterruptedException e) {
                         if (interruptable) {
                             throw e;
                         }
@@ -236,12 +243,14 @@ public abstract class FutureTemplate implements BillyFuture {
 
                     if (completed || (endTime < System.currentTimeMillis())) {
                         return completed;
-                    } else {
+                    }
+                    else {
                         // 检查死锁
                         checkDeadlock();
                     }
                 }
-            } finally {
+            }
+            finally {
                 // 到这一步会有三种可能 :
                 // 1) 我们被唤醒了 (操作被当前future或者其他方式完成了)
                 // 2) 超时了

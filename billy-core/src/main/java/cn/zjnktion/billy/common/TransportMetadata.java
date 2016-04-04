@@ -47,6 +47,8 @@ public interface TransportMetadata {
 
     boolean isConnectionless();
 
+    boolean canFragmentation();
+
     Class<? extends SocketAddress> getSocketAddressType();
 
     Class<? extends ContextConfig> getContextConfigType();

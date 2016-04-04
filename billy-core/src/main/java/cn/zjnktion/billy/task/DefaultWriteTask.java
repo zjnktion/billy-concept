@@ -75,10 +75,12 @@ public class DefaultWriteTask implements WriteTask {
 
         if (message.getClass().getName().equals(Object.class.getName())) {
             sb.append("CLOSE_TASK");
-        } else {
+        }
+        else {
             if (getDestination() == null) {
                 sb.append(message);
-            } else {
+            }
+            else {
                 sb.append(message);
                 sb.append(" => ");
                 sb.append(getDestination());

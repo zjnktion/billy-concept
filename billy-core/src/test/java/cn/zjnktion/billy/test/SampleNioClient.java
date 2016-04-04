@@ -53,17 +53,20 @@ public class SampleNioClient {
             System.out.println("client finish connect");
             channel.write(ByteBuffer.wrap("hello".getBytes()));
             channel.register(this.selector, SelectionKey.OP_READ);
-        } else if (key.isReadable()) {
+        }
+        else if (key.isReadable()) {
             SocketChannel channel = (SocketChannel) key.channel();
             System.out.println(channel.getRemoteAddress() + " readable...");
             ByteBuffer buff = ByteBuffer.allocate(1024);
             try {
                 channel.read(buff);
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 throw e;
             }
             System.out.println(new String(buff.array()));
-        } else if (key.isWritable()) {
+        }
+        else if (key.isWritable()) {
             SocketChannel channel = (SocketChannel) key.channel();
             System.out.println(channel.getRemoteAddress() + " writable...");
         }

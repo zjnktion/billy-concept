@@ -77,8 +77,9 @@ public abstract class NioServerTemplete<C extends ContextTemplete, S> extends Se
             if (!workable) {
                 try {
                     destory();
-                } catch (Exception e) {
-                    // we should monitor this exception and deliver to business handler.
+                }
+                catch (Exception e) {
+                    // TODO we should monitor this exception and deliver to business handler.
                 }
             }
         }
@@ -95,7 +96,8 @@ public abstract class NioServerTemplete<C extends ContextTemplete, S> extends Se
 
             TimeUnit.MILLISECONDS.sleep(10);
             wakeupSelect();
-        } finally {
+        }
+        finally {
             semaphore.release();
         }
 
@@ -131,7 +133,8 @@ public abstract class NioServerTemplete<C extends ContextTemplete, S> extends Se
     protected final void init() throws Exception {
         if (selectorProvider == null) {
             selector = Selector.open();
-        } else {
+        }
+        else {
             selector = selectorProvider.openSelector();
         }
     }

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -92,7 +93,8 @@ public abstract class ContextTemplete implements Context {
                 if (readFuture.isClosed()) {
                     readyReadQueue.offer(readFuture);
                 }
-            } else {
+            }
+            else {
                 readFuture = new DefaultReadFuture(this);
                 getWaitingReadQueue().offer(readFuture);
             }
@@ -141,6 +143,8 @@ public abstract class ContextTemplete implements Context {
             future.setCause(writeException);
             return future;
         }
+
+        // TODO 我们应该检查message是否为Billy自定义的ByteBuffer实例，并且检查ByteBuffer实例中是否有消息
 
         WriteFuture writeFuture = new DefaultWriteFuture(this);
         WriteTask writeTask = new DefaultWriteTask(message, writeFuture, destination);
@@ -272,7 +276,7 @@ public abstract class ContextTemplete implements Context {
     }
 
     public final int getIdleCount(IdleType idleType) {
-        if (getEngine().getContextConfig().getIdleTime(idleType) == 0) {
+        if (getEngine().getContextConfig().getIdleTime(idleType, TimeUnit.MILLISECONDS) == 0) {
             if (idleType == IdleType.BOTH_IDLE) {
                 idleCountForBoth.set(0);
             }

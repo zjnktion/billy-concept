@@ -66,7 +66,8 @@ public abstract class EngineTemplate implements Engine {
         if (executor == null) {
             this.executor = Executors.newCachedThreadPool();
             createdDefaultExecutor = true;
-        } else {
+        }
+        else {
             this.executor = executor;
             createdDefaultExecutor = false;
         }
@@ -78,8 +79,9 @@ public abstract class EngineTemplate implements Engine {
             for (EngineListener listener : listeners) {
                 try {
                     listener.engineActivated(this);
-                } catch (Exception e) {
-                    // we should monitor this exception and deliver to business handler.
+                }
+                catch (Exception e) {
+                    // TODO we should monitor this exception and deliver to business handler.
                 }
             }
         }
@@ -92,11 +94,13 @@ public abstract class EngineTemplate implements Engine {
                 for (EngineListener listener : listeners) {
                     try {
                         listener.engineDeactivated(this);
-                    } catch (Exception e) {
-                        // we should monitor this exception and deliver to business handler.
+                    }
+                    catch (Exception e) {
+                        // TODO we should monitor this exception and deliver to business handler.
                     }
                 }
-            } finally {
+            }
+            finally {
                 disconnectAllConnections();
             }
         }
@@ -202,8 +206,9 @@ public abstract class EngineTemplate implements Engine {
 
             try {
                 disposeImpl();
-            } catch (Exception e) {
-                // we should monitor this exception and deliver to business handler.
+            }
+            catch (Exception e) {
+                // TODO we should monitor this exception and deliver to business handler.
             }
         }
 
@@ -216,7 +221,8 @@ public abstract class EngineTemplate implements Engine {
                     LOGGER.debug("ExecutorService awaitTermination is called on {} by Thread[{}]", this, Thread.currentThread().getName());
                     es.awaitTermination(Integer.MAX_VALUE, TimeUnit.SECONDS);
                     LOGGER.debug("ExecutorService termination success on {} by Thread[{}]", this, Thread.currentThread().getName());
-                } catch (InterruptedException e) {
+                }
+                catch (InterruptedException e) {
                     LOGGER.warn("ExecutorService awaitTermination cause InterruptedException on {} by [{}]", this, Thread.currentThread().getName());
                     Thread.currentThread().interrupt();
                 }

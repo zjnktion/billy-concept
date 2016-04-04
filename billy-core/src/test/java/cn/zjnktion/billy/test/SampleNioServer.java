@@ -62,19 +62,22 @@ public class SampleNioServer {
             channel.configureBlocking(false);
             channel.register(this.selector, SelectionKey.OP_WRITE);
             channel.register(this.selector, SelectionKey.OP_READ);
-        } else if (key.isReadable()) {
+        }
+        else if (key.isReadable()) {
             SocketChannel channel = (SocketChannel) key.channel();
             System.out.println(channel.getRemoteAddress() + " readable...");
             ByteBuffer buff = ByteBuffer.allocate(1024);
             try {
                 channel.read(buff);
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 //e.printStackTrace();
                 throw e;
             }
             System.out.println(new String(buff.array()));
             //channel.register(this.selector, SelectionKey.OP_WRITE);
-        } else if (key.isWritable()) {
+        }
+        else if (key.isWritable()) {
             SocketChannel channel = (SocketChannel) key.channel();
             System.out.println(channel.getRemoteAddress() + " writable...");
             channel.write(ByteBuffer.wrap("shello".getBytes()));

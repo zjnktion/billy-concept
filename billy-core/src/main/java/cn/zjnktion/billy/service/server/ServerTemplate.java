@@ -125,8 +125,9 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
         for (EngineListener listener : listeners) {
             try {
                 listener.contextCreated(context);
-            } catch (Exception e) {
-                // we should monitor this exception and deliver to business handler.
+            }
+            catch (Exception e) {
+                // TODO we should monitor this exception and deliver to business handler.
             }
         }
     }
@@ -143,8 +144,9 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
         for (EngineListener listener : listeners) {
             try {
                 listener.contextClosed(context);
-            } catch (Exception e) {
-                // we should monitor this exception and deliver to business handler.
+            }
+            catch (Exception e) {
+                // TODO we should monitor this exception and deliver to business handler.
             }
         }
     }
@@ -166,7 +168,8 @@ public abstract class ServerTemplate extends EngineTemplate implements Server {
                     lock.wait(500);
                 }
             }
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             // do nothing
         }
     }
